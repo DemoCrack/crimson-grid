@@ -485,12 +485,17 @@
 	owner.st_remove_stat_mod(STAT_DEXTERITY, "vengeance_of_samiel")
 	owner.st_remove_stat_mod(STAT_MELEE, "vengeance_of_samiel")
 	owner.st_remove_stat_mod(STAT_BRAWL, "vengeance_of_samiel")
-	if (iscarbon(owner))
-		for (var/obj/item/bodypart/limb in affected_bodyparts)
-			limb.unarmed_attack_sound = initial(limb.unarmed_attack_sound)
-	else if (isbasicmob(owner))
+
+	for(var/datum/weakref/limb_weakref in affected_bodyparts)
+		var/obj/item/bodypart/limb = limb_weakref.resolve()
+		if(!limb)
+			continue
+		limb.unarmed_attack_sound = limb::unarmed_attack_sound
+
+	if (isbasicmob(owner))
 		var/mob/living/basic/basic_owner = owner
 		basic_owner.attack_sound = basic_owner::attack_sound
+
 	LAZYCLEARLIST(affected_bodyparts)
 	UnregisterSignal(owner, COMSIG_MOB_ITEM_ATTACK)
 	qdel(tackler)
